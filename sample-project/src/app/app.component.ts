@@ -1,37 +1,25 @@
-import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { SampleService } from './app.service';
+import { Component } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import { Role, User } from './app.interfaces';
+import { AuthService } from './auth.service';
+import { LoginComponent } from './login/login-component';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  providers: [SampleService],
-  imports: [NgIf, NgFor],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  providers: [AuthService],
+  imports: [NgIf, NgFor, LoginComponent, HttpClientModule],
+  template: `
+    <div style="margin-bottom: 20px">
+      <button (click)="logout()">Logout</button>
+    </div>
+    <app-login></app-login>
+  `,
 })
-export class AppComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  readonly ROLE = Role;
-  private user = this.sampleService.getUser();
-  users: User[] = [];
+export class AppComponent {
+  constructor(private authService: AuthService) {}
 
-  constructor(private sampleService: SampleService) {}
-
-  ngOnInit() {
-    console.log('ngOnInit');
-    this.users = this.sampleService.getUsers();
-  }
-
-  ngAfterViewInit(): void {
-    console.log('ngAfterViewInit');
-  }
-
-  ngOnChanges(): void {
-    console.log('ngOnChanges');
-  }
-
-  ngOnDestroy(): void {
-    console.log('ngOnDestroy');
+  logout() {
+    this.authService.logout();
   }
 }
