@@ -2,7 +2,24 @@
 <ul>
   <ng-container *ngFor="let user of users">
     <li *ngIf="user.role === ROLE.ADMIN">
-      <p>{{ user.firstName }} {{ user.lastName }}</p>
+      <p>{{ user.firstName }} {{ user.lastName | uppercase }}</p>
     </li>
   </ng-container>
 </ul>
+<ng-container *ngTemplateOutlet="my_template; context: { variable: 'World' }"></ng-container>
+<ng-container *ngTemplateOutlet="my_template; context: { variable: 'Hello' }"></ng-container>
+
+<!-- <ul>
+  <li *ngFor="let image of products.images">
+    <img [src]="image">
+  </li>
+</ul> -->
+<ng-container *ngTemplateOutlet="my_template"></ng-container>
+<ng-template #my_template let-variable="variable">
+  <p>Mój template {{ variable }}</p>
+</ng-template>
+
+<app-child text="my text" (textChanged$)="getText($event)">
+  <h1 header>CONTENT</h1>
+  <h5 header2> inny header</h5>
+</app-child>

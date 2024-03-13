@@ -1,26 +1,62 @@
-import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { SampleService } from './app.service';
-import { NgFor, NgIf } from '@angular/common';
+import {
+  AsyncPipe,
+  NgFor,
+  NgIf,
+  NgTemplateOutlet,
+  UpperCasePipe,
+} from '@angular/common';
 import { Role, User } from './app.interfaces';
+import { BehaviorSubject, Subject, Subscription, take, takeUntil } from 'rxjs';
+import { ChildComponent } from './child/child.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   providers: [SampleService],
-  imports: [NgIf, NgFor],
+  imports: [
+    NgIf,
+    NgFor,
+    AsyncPipe,
+    UpperCasePipe,
+    NgTemplateOutlet,
+    ChildComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class AppComponent
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
+{
   readonly ROLE = Role;
-  private user = this.sampleService.getUser();
   users: User[] = [];
+  sampleService = inject(SampleService);
+  products: any;
+  destroy$ = new Subject<void>();
+  subcription: Subscription;
 
-  constructor(private sampleService: SampleService) {}
+  private user = this.sampleService.getUser();
 
   ngOnInit() {
-    console.log('ngOnInit');
     this.users = this.sampleService.getUsers();
+
+    this.subcription = this.sampleService
+      .getProducts()
+      .subscribe((products) => {
+        this.products = products;
+      });
+  }
+
+  getText(text: string) {
+    console.log(text);
   }
 
   ngAfterViewInit(): void {
@@ -33,5 +69,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
 
   ngOnDestroy(): void {
     console.log('ngOnDestroy');
+    this.subcription.unsubscribe();
   }
 }
